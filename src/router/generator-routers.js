@@ -18,26 +18,6 @@ const constantRouterComponents = {
   'Workplace': () => import('@/views/dashboard/Workplace'),
   'Analysis': () => import('@/views/dashboard/Analysis'),
 
-  // form
-  'BasicForm': () => import('@/views/demo/form/BasicForm'),
-  'StepForm': () => import('@/views/demo/form/stepForm/StepForm'),
-  'AdvanceForm': () => import('@/views/demo/form/advancedForm/AdvancedForm'),
-
-  // list
-  'TableList': () => import('@/views/demo/list/TableList'),
-  'StandardList': () => import('@/views/demo/list/StandardList'),
-  'CardList': () => import('@/views/demo/list/CardList'),
-  'SearchLayout': () => import('@/views/demo/list/search/SearchLayout'),
-  'SearchArticles': () => import('@/views/demo/list/search/Article'),
-  'SearchProjects': () => import('@/views/demo/list/search/Projects'),
-  'SearchApplications': () => import('@/views/demo/list/search/Applications'),
-  'ProfileBasic': () => import('@/views/demo/profile/basic/Index'),
-  'ProfileAdvanced': () => import('@/views/demo/profile/advanced/Advanced'),
-
-  // result
-  'ResultSuccess': () => import(/* webpackChunkName: "result" */ '@/views/demo/result/Success'),
-  'ResultFail': () => import(/* webpackChunkName: "result" */ '@/views/demo/result/Error'),
-
   // exception
   'Exception403': () => import(/* webpackChunkName: "fail" */ '@/views/exception/403'),
   'Exception404': () => import(/* webpackChunkName: "fail" */ '@/views/exception/404'),

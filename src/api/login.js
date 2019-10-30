@@ -1,68 +1,69 @@
-import api from './index'
-import { axios } from '@/utils/request'
+import { request } from '@/utils/request'
+import apis from './index'
+export function getSmsCaptcha (data) {
+  return request({
+    url: apis.login.getSmsCaptcha,
+    method: 'post',
+    data: data
+  })
+}
 
 /**
- * login func
- * parameter: {
- *     username: '',
- *     password: '',
- *     remember_me: true,
- *     captcha: '12345'
- * }
- * @param parameter
- * @returns {*}
+ * 用户登录
+ * @param username
+ * @param password
  */
-export function login (parameter) {
-  return axios({
-    url: '/auth/login',
-    method: 'post',
-    data: parameter
+export const login = ({ username, password }) => {
+  const data = {
+    username,
+    password
+  }
+  return request({
+    url: apis.login.login,
+    data,
+    method: 'post'
   })
 }
 
-export function getSmsCaptcha (parameter) {
-  return axios({
-    url: api.SendSms,
-    method: 'post',
-    data: parameter
+/**
+ * 登出
+ */
+export const logout = (token) => {
+  return request({
+    url: apis.login.logout,
+    data: { token: token },
+    method: 'post'
   })
 }
 
-export function getInfo () {
-  return axios({
-    url: '/user/info',
-    method: 'get',
-    headers: {
-      'Content-Type': 'application/json;charset=UTF-8'
-    }
-  })
-}
-
-export function getCurrentUserNav (token) {
-  return axios({
-    url: '/user/nav',
+/**
+ * 获取用户信息
+ */
+export const getUserInfo = () => {
+  return request({
+    url: apis.login.getUserInfo,
     method: 'get'
   })
 }
 
-export function logout () {
-  return axios({
-    url: '/auth/logout',
-    method: 'post',
-    headers: {
-      'Content-Type': 'application/json;charset=UTF-8'
-    }
+/**
+ * 获取登录用户菜单权限
+ */
+export const getUserMenu = () => {
+  return request({
+    url: apis.login.getUserMenu,
+    method: 'get'
   })
 }
 
 /**
  * get user 2step code open?
- * @param parameter {*}
+ * @param data {*}
  */
-export function get2step (parameter) {
-  return axios({
-    url: api.twoStepCode,
+export function mobileLogin (data) {
+  return request({
+    url: 'admin/mobile/token/2',
     method: 'post',
-    data: parameter
+    data: data
   })
 }

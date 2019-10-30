@@ -6,11 +6,11 @@ const getters = {
   avatar: state => state.user.avatar,
   nickname: state => state.user.name,
   welcome: state => state.user.welcome,
-  roles: state => state.user.roles,
+  authorities: state => state.user.authorities,
+  menus: state => state.user.menus,
   userInfo: state => state.user.info,
-  addRouters: state => state.permission.addRouters,
-  multiTab: state => state.app.multiTab,
-  lang: state => state.i18n.lang
+  addRouters: state => state.menu.addRouters,
+  multiTab: state => state.app.multiTab
 }
 
 export default getters
