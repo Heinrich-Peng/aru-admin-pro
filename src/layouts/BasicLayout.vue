@@ -91,7 +91,7 @@ export default {
   computed: {
     ...mapState({
       // 动态主路由
-      mainMenu: state => state.permission.addRouters
+      mainMenu: state => state.menu.addRouters
     }),
     contentPaddingLeft () {
       if (!this.fixSidebar || this.isMobile()) {
