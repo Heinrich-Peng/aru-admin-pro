@@ -18,7 +18,9 @@ export default {
   appKey: process.env.VUE_APP_KEY,
   appSecretKey: process.env.VUE_APP_SECRET_KEY,
   useI18n: false, // 国际化
-  titleSuffix: ` - 后台管理`, // 标题后缀
+  titleSuffix: `后台管理`, // 标题后缀
+  title: 'Aru Admin Pro',
+  author: 'LittleAru',
   primaryColor: '#52C41A', // primary color of ant design
   navTheme: 'dark', // theme for nav menu
   layout: 'sidemenu', // nav menu position: sidemenu or topmenu

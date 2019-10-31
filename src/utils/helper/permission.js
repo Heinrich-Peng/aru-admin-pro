@@ -21,7 +21,7 @@ function plugin (Vue) {
         const _this = this
         return (permissions) => {
           const [permission, action] = permissions.split('.')
-          const permissionList = _this.$store.getters.roles.permissions
+          const permissionList = _this.$store.getters.menu.addRouters
           return permissionList.find((val) => {
             return val.permissionId === permission
           }).actionList.findIndex((val) => {

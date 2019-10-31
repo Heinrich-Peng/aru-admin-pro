@@ -16,7 +16,7 @@
     </div>
     <div class="copyright">
       Copyright
-      <a-icon type="copyright" /> 2018 <span>白鹭学园技术组出品</span>
+      <a-icon type="copyright" /> 2019 <span>{{ $config.author }} 出品</span>
     </div>
   </div>
 </template>

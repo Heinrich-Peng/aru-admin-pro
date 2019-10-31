@@ -11,6 +11,9 @@ import bootstrap from './core/bootstrap'
 import './core/use'
 import './utils/filter' // global filter
 
+// 组件引用
+import './libs/use'
+
 Vue.config.productionTip = false
 
 // mount axios Vue.$http and this.$http
