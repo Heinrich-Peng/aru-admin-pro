@@ -19,14 +19,22 @@ function plugin (Vue) {
     $auth: {
       get () {
         const _this = this
-        return (permissions) => {
-          const [permission, action] = permissions.split('.')
-          const permissionList = _this.$store.getters.menu.addRouters
-          return permissionList.find((val) => {
-            return val.permissionId === permission
-          }).actionList.findIndex((val) => {
-            return val === action
-          }) > -1
+        // return (permissions) => {
+        //   const [permission, action] = permissions.split('.')
+        //   const permissionList = _this.$store.getters.authorities
+        //   return permissionList.find((val) => {
+        //     return val.permissionId === permission
+        //   }).actionList.findIndex((val) => {
+        //     return val === action
+        //   }) > -1
+        // }
+        return (authorities) => {
+          if (!authorities) {
+            return false
+          }
+          return authorities.split(',').some(item => {
+            return _this.$store.state.user.authorities.includes('ACTION_' + item)
+          })
         }
       }
     }

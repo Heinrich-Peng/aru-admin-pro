@@ -29,7 +29,7 @@
         </a-form>
       </div>
 
-      <div class="table-operator">
+      <div class="table-operator" v-show="$auth('systemUserEdit')">
         <a-button type="primary" @click="handleSave">添加</a-button>
         <a-dropdown>
           <a-menu slot="overlay" @click="handleDelete">
@@ -63,12 +63,12 @@ const statusMap = {
   '2': { color: 'orange', text: '锁定' }
 }
 
+/* eslint-disable */
 export default {
   name: 'SystemUser',
   components: {
     STable
   },
-  /* eslint-disable */
   data () {
     return {
       title: '用户管理',
@@ -93,7 +93,7 @@ export default {
         { title: '注册时间', dataIndex: 'createTime' },
         { title: '操作', dataIndex: 'action', width: 180,
           customRender: (text, record, index) => {
-            return <div>
+            return <div v-show={this.$auth('systemUserEdit')}>
                     <a-button style="margin-right: 5px;" type="primary" size="small">编辑</a-button>
                     <a-dropdown>
                       <a-menu slot="overlay" onClick={this.handleAction}>
@@ -125,7 +125,6 @@ export default {
     }
   },
   created () {
-
   },
   methods: {
     loadData (parameter) {
@@ -141,20 +140,20 @@ export default {
         return result
       })
     },
-    handleSearch () {
+    handleSearch (param) {
 
     },
-    handleResetForm () {
+    handleResetForm (param) {
 
     },
-    handleSave () {
+    handleSave (param) {
 
     },
-    handleDelete (){
+    handleDelete (param){
 
     },
-    handleAction (e) {
-      console.log(e)
+    handleAction (param) {
+      console.log(param)
     }
   },
   mounted: function () {
