@@ -16,6 +16,17 @@ import PermissionHelper from '@/utils/helper/permission'
 // import '@/components/use'
 import './directives/action'
 
+// TODO --------------------------------
+import VXETable from 'vxe-table'
+import TreeSelect from '@riophae/vue-treeselect'
+import VueBus from '@/utils/vue-bus'
+import { STable } from '@/components'
+import Install from './libs/install'
+import 'vxe-table/lib/index.css'
+import '@riophae/vue-treeselect/dist/vue-treeselect.css'
+import '@/components/index.less'
+Vue.config.productionTip = false
+
 VueClipboard.config.autoSetContainer = true
 
 Vue.use(Antd)
@@ -26,3 +37,13 @@ Vue.use(VueStorage, config.storageOptions)
 Vue.use(VueClipboard)
 Vue.use(PermissionHelper)
 Vue.use(VueCropper)
+
+// TODO --------------------------------
+Vue.use(VXETable)
+Vue.component('treeselect', TreeSelect)
+// 事件总线
+Vue.use(VueBus)
+// 注册自定义组件
+Vue.use(STable)
+// 全局注册应用配置
+Vue.use(Install)

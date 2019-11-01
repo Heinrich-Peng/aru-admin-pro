@@ -1,8 +1,7 @@
-import config from '../config/defaultSettings'
-import { request } from '../utils/request'
-import apis from '../api'
-import { rules } from '../utils/validate'
-import store from '../store'
+import config from '@/config/defaultSettings'
+import { request } from '@/utils/request'
+import apis from '@/api'
+import { rules } from '@/utils/validate'
 
 const Install = {
   vm: {},
