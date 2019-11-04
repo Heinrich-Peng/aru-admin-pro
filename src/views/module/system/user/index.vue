@@ -3,17 +3,19 @@
     ref="tableSearch"
     title="用户管理"
     :searchColums="searchColums"
-    tableRowKey="userId"
+    :actionShow="$auth('systemUserEdit')"
+    :actionColumns="actionColumns"
+    :tableRowKey="tableRowKey"
     :tableColumns="tableColumns"
-    :showAction="$auth('systemUserEdit')"
     :pageFunc="pageFunc"
-    :saveFunc="null"
-    :updateFunc="null"
-    :deleteFunc="deleteFunc"
-    @on-search=""
-    @on-reset=""
-    @on-save=""
-    @on-delete=""
+    :saveFunc="saveFunc"
+    :deleteFunc="null"
+    @on-loadData="() => {}"
+    @on-search="() => {}"
+    @on-reset="() => {}"
+    @on-save="() => {}"
+    @on-delete="() => {}"
+    @on-action="() => {}"
   >
     <user-modal
       ref="userModal"
@@ -35,17 +37,11 @@ export default {
   },
   data () {
     return {
+      tableRowKey: "userId",
       searchColums: [
         { title: '登录名', dataIndex: 'userName', type: 'text' },
         { title: '手机号', dataIndex: 'mobile', type: 'num' },
-        { title: '邮箱', dataIndex: 'email', type: 'text' },
-        { title: '测试', dataIndex: 'test', type: 'render',
-          render: <a-select placeholder="请选择" default-value="0">
-                    <a-select-option value="0">全部</a-select-option>
-                    <a-select-option value="1">关闭</a-select-option>
-                    <a-select-option value="2">运行中</a-select-option>
-                  </a-select>
-        },
+        { title: '邮箱', dataIndex: 'email', type: 'text' }
       ],
       tableColumns: [
         { title: '序号', dataIndex: 'serial',
@@ -73,19 +69,28 @@ export default {
         { title: '操作', dataIndex: 'action', width: 180,
           customRender: (text, record, index) => {
             return <div v-show={this.$auth('systemUserEdit')}>
-              <a-button style="margin-right: 5px;" type="primary" size="small" onClick={this.handleAction}>编辑</a-button>
+              <a-button
+                style="margin-right: 5px;"
+                type="primary"
+                size="small"
+                onClick={() => this.saveFunc({text, record, index})}
+              >编辑</a-button>
               <a-dropdown>
-                <a-menu slot="overlay" onClick={this.handleAction}>
+                <a-menu
+                  slot="overlay"
+                  onClick={() => this.handleAction({text, record, index})}>
                   <a-menu-item key="1"><a-icon type="user"/>用户设置</a-menu-item>
                   <a-menu-item key="2"><a-icon type="select"/>发送到密保邮箱</a-menu-item>
                   <a-menu-item key="3"><a-icon type="tool"/>修改密码</a-menu-item>
-                  <a-menu-item key="4"><a-icon type="close"/>删除</a-menu-item>
                 </a-menu>
                 <a-button size="small">更多<a-icon type="down"/></a-button>
               </a-dropdown>
             </div>
           }
         }
+      ],
+      actionColumns: [
+        { title: '批量', dataIndex: 'batch', icon: 'star', func: (that) => { console.log(that) } },
       ]
     }
   },
@@ -114,21 +119,23 @@ export default {
       })
     },
     saveFunc (param) {
-      return this.$http.post(this.$apis.user.add, {
+      // return this.$http.post(this.$apis.user.add, {
+      //
+      // }).then(res => {
+      //
+      // })
 
-      }).then(res => {
-
-      })
-    },
-    updateFunc (param) {
-      return this.$http.post(this.$apis.user.update, {
-
-      }).then(res => {
-
-      })
-    },
-    deleteFunc (param) {
-      return this.$http.get(this.$apis.user.page, param)
+      // return this.$http.post(this.$apis.user.update, {
+      //
+      // }).then(res => {
+      //
+      // })
+      // if (param){
+      //   console.log('sss')
+      // } else {
+      //   console.log('xxxx')
+      // }
+      this.$refs['userModal'].handleShow(param)
     },
     handleAction (param) {
       this.$refs['userModal'].handleShow(param)

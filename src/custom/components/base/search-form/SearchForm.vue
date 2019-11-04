@@ -1,20 +1,47 @@
 <template>
   <div class="table-page-search-wrapper" v-if="searchColums.length !== 0">
-    <a-form layout="inline">
+    <!--横排-->
+    <a-form layout="inline" v-if="rowEnable">
       <a-row :gutter="48">
-        <a-col :md="8" :sm="24" v-for="v in searchColums" :key="v.dataIndex">
+        <a-col
+          v-for="v in searchColums"
+          :key="v.dataIndex"
+          :md="6"
+          :sm="24"
+        >
           <a-form-item :label="v.title" :prop="v.dataIndex">
             <a-input v-if="v.type === 'text'" v-model="value[v.dataIndex]" placeholder="请输入关键值"/>
-            <a-input-number v-else-if="v.type === 'num'" v-model="value[v.dataIndex]" style="width: 100%"/>
+            <a-input-number v-else-if="v.type === 'num'" v-model="value[v.dataIndex]" placeholder="请输入关键值" style="width: 100%"/>
             <proxy-slot v-else-if="v.type === 'render'" :customRender="v.render"></proxy-slot>
           </a-form-item>
         </a-col>
-        <a-col :md="8" :sm="24">
-          <span class="table-page-search-submitButtons" :style="{ float: 'right', overflow: 'hidden' } || {} ">
-            <a-button type="primary" @click="handleSearch()">查询</a-button>&nbsp;
-            <a-button @click="handleReset()">重置</a-button>
-          </span>
-        </a-col>
+        <span
+          class="table-page-search-submitButtons"
+          :style="{ float: 'right', overflow: 'hidden', paddingLeft: '24px', paddingRight: '24px' } || {} ">
+          <a-button type="primary" @click="handleSearch()">查询</a-button>&nbsp;
+          <a-button @click="handleReset()">重置</a-button>
+        </span>
+      </a-row>
+    </a-form>
+    <a-form layout="horizontal" v-else>
+      <!--竖排-->
+      <a-row>
+        <a-form-item
+          v-for="v in searchColums"
+          :key="v.dataIndex"
+          :label="v.title"
+          :prop="v.dataIndex"
+          :label-col="{ span: 5 }"
+          :wrapper-col="{ span: 16 }"
+        >
+          <a-input v-if="v.type === 'text'" v-model="value[v.dataIndex]" placeholder="请输入关键值"/>
+          <a-input-number v-else-if="v.type === 'num'" v-model="value[v.dataIndex]" style="width: 100%"/>
+          <proxy-slot v-else-if="v.type === 'render'" :customRender="v.render"></proxy-slot>
+        </a-form-item>
+        <span class="table-page-search-submitButtons" :style="{ float: 'right', overflow: 'hidden' } || {} ">
+          <a-button type="primary" @click="handleSearch()">查询</a-button>&nbsp;
+          <a-button @click="handleReset()">重置</a-button>
+        </span>
       </a-row>
     </a-form>
   </div>
@@ -45,6 +72,7 @@
  * *     { title: '自定义', dataIndex: 'render', type: 'render',
  * *       render: <a-select placeholder="请选择" default-value="0">}
  * *   ]'
+ * *   :rowEnable="true"
  * *   @on-search='(data) => console.log(data)'
  * *   @on-reset='(data) => console.log(data)'
  * * ></search-form>
@@ -57,7 +85,9 @@ export default {
     // value一般传进来为空对象{},对象里是自动生成查询字段的 键,值
     value: { type: Object, required: true },
     // 模版会根据该字段自动生成
-    searchColums: { type: Array, required: false, default: () => { return [] } }
+    searchColums: { type: Array, required: false, default: () => { return [] } },
+    // 配置成 横排(false) / 竖排(true)
+    rowEnable: { type: Boolean, required: false, default: () => { return true } }
   },
   data () {
     return {
@@ -80,8 +110,11 @@ export default {
      * 重置按钮事件
      */
     handleReset (param) {
-      // 删除value里面全部字段
-      Object.keys(this.value).forEach(key => delete this.value[key])
+      // 先设置null是为了清空输入窗，删除value里面全部字段
+      Object.keys(this.value).forEach(key => {
+        this.value[key] = null
+        delete this.value[key]
+      })
       this.$emit('on-reset', { param: param })
     }
   }
