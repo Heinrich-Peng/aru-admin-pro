@@ -10,15 +10,12 @@
     :pageFunc="pageFunc"
     :saveFunc="saveFunc"
     :deleteFunc="null"
-    @on-loadData="() => {}"
     @on-search="() => {}"
     @on-reset="() => {}"
-    @on-save="() => {}"
-    @on-delete="() => {}"
-    @on-action="() => {}"
   >
     <user-modal
       ref="userModal"
+      @on-close="() => {}"
     >
     </user-modal>
   </search-table>
@@ -27,13 +24,15 @@
 <script>
 import SearchTable from '@/custom/components/search-table'
 import UserModal from './modal'
+import { SDropdown } from '@/custom/components/base'
 
 /* eslint-disable */
 export default {
   name: 'SystemUser',
   components: {
     SearchTable,
-    UserModal
+    UserModal,
+    SDropdown
   },
   data () {
     return {
@@ -73,30 +72,36 @@ export default {
                 style="margin-right: 5px;"
                 type="primary"
                 size="small"
-                onClick={() => this.saveFunc({text, record, index})}
+                onClick={(param) => this.saveFunc({ param, text, record, index })}
               >编辑</a-button>
-              <a-dropdown>
-                <a-menu
-                  slot="overlay"
-                  onClick={() => this.handleAction({text, record, index})}>
-                  <a-menu-item key="1"><a-icon type="user"/>用户设置</a-menu-item>
-                  <a-menu-item key="2"><a-icon type="select"/>发送到密保邮箱</a-menu-item>
-                  <a-menu-item key="3"><a-icon type="tool"/>修改密码</a-menu-item>
-                </a-menu>
-                <a-button size="small">更多<a-icon type="down"/></a-button>
-              </a-dropdown>
+              <s-dropdown
+                size="small"
+                actionColumns={[
+                  { title: '用户设置', dataIndex: 'userSetting', icon: 'user',
+                    func: (param) => { this.handleAction(Object.assign({}, param, { text, record, index })) } },
+                  { title: '发送到密保邮箱', dataIndex: 'sendEmail', icon: 'select',
+                    func: (param) => { this.handleAction(Object.assign({}, param, { text, record, index })) } },
+                  { title: '修改密码', dataIndex: 'updatePasswd', icon: 'tool',
+                    func: (param) => { this.handleAction(Object.assign({}, param, { text, record, index })) } },
+                ]}
+              ></s-dropdown>
             </div>
           }
         }
       ],
       actionColumns: [
-        { title: '批量', dataIndex: 'batch', icon: 'star', func: (that) => { console.log(that) } },
+        { title: '批量', dataIndex: 'batch', icon: 'star',
+          func: (param) => { this.handleAction(param) }
+        },
       ]
     }
   },
   created () {
   },
   methods: {
+    /**
+     * 表格分页处理函数
+     */
     pageFunc (param) {
       const _param = {}
       Object.keys(param).forEach(key => {
@@ -118,29 +123,26 @@ export default {
         return result
       })
     },
-    saveFunc (param) {
-      // return this.$http.post(this.$apis.user.add, {
-      //
-      // }).then(res => {
-      //
-      // })
-
-      // return this.$http.post(this.$apis.user.update, {
-      //
-      // }).then(res => {
-      //
-      // })
-      // if (param){
-      //   console.log('sss')
-      // } else {
-      //   console.log('xxxx')
-      // }
-      this.$refs['userModal'].handleShow(param)
+    saveFunc (_param) {
+      if (_param === undefined) {
+        // 添加按钮
+        this.$refs['userModal'].handleShow(null, '新增用户', ['userInfo'])
+      } else {
+        // 编辑按钮
+        const { param, text, record, index } = _param
+        this.$refs['userModal'].handleShow(record, '编辑用户 - ' + record.userName, ['userInfo', 'userRole', 'userAuth', 'updatePasswd'])
+      }
     },
-    handleAction (param) {
-      this.$refs['userModal'].handleShow(param)
-      console.log(this.$refs['tableSearch'].selectedRows)
-      console.log(this.$refs['tableSearch'].selectedRowKeys)
+    handleAction (_param) {
+      if (_param.key !== undefined && _param.object !== undefined) {
+        // 批量操作
+        const { actionParam, key, object } = _param
+        this.$refs['userModal'].handleShow(key, actionParam.title, [])
+      } else {
+        // 表格操作
+        const { actionParam, text, record, index } = _param
+        this.$refs['userModal'].handleShow(record, actionParam.title, [])
+      }
     }
   },
   mounted: function () {

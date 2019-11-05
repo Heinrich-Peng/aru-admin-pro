@@ -89,20 +89,21 @@ export default {
     /**
      * modal显示
      */
-    handleShow (data) {
+    handleShow (param) {
       this.modalVisible = true
     },
     /**
      * 取消按钮事件
      */
-    handleClose () {
-      this.handleReset()
+    handleClose (param) {
+      // this.handleReset()
+      this.$bus.emit('closeModal')
       this.$emit('on-close', { tabKey: this.tabActiveKey })
     },
     /**
      * 确认按钮事件
      */
-    handleSubmit () {
+    handleSubmit (param) {
       this.modalSaving = true
       this.$emit('on-submit', { tabKey: this.tabActiveKey })
     }

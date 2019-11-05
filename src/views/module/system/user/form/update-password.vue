@@ -1,98 +1,85 @@
-<!--<template>-->
-<!--  &lt;!&ndash;修改密码&ndash;&gt;-->
-<!--  <div class="search">-->
-<!--    <Form ref="form" :model="formItem" :rules="formItemRules" :label-width="100">-->
-<!--      <FormItem label="登录密码" prop="password">-->
-<!--        <Input type="password" v-model="formItem.password" placeholder="请输入内容"></Input>-->
-<!--      </FormItem>-->
-<!--      <FormItem label="再次确认密码" prop="passwordConfirm">-->
-<!--        <Input type="password" v-model="formItem.passwordConfirm" placeholder="请输入内容"></Input>-->
-<!--      </FormItem>-->
-<!--    </Form>-->
-<!--  </div>-->
-<!--</template>-->
+<template>
+  <a-form :form="form" @submit="handleSubmit">
+    <a-form-item v-bind="formItemLayout" label="要修改的密码">
+      <a-input
+        type="password"
+        autocomplete="false"
+        placeholder="至少6位密码，区分大小写"
+        v-decorator="['password', {rules: [{ required: true, message: '至少6位密码，区分大小写'}, { validator: this.validatePass }], validateTrigger: ['change', 'blur']}]"
+      />
+    </a-form-item>
+    <a-form-item v-bind="formItemLayout" label="再次确认密码">
+      <a-input
+        type="password"
+        autocomplete="false"
+        placeholder="确认密码"
+        v-decorator="['passwordConfirm', {rules: [{ required: true, message: '至少6位密码，区分大小写' }, { validator: this.validatePassConfirm }], validateTrigger: ['change', 'blur']}]"
+      />
+    </a-form-item>
+  </a-form>
+</template>
 
-<!--<script>-->
-<!--export default {-->
-<!--  name: 'UpdatePassword',-->
-<!--  props: {},-->
-<!--  data () {-->
-<!--    const validatePass = (rule, value, callback) => {-->
-<!--      const reg2 = /^.{6,18}$/-->
-<!--      if (value === '') {-->
-<!--        callback(new Error('请输入密码'))-->
-<!--      } else if (value !== this.formItem.password) {-->
-<!--        callback(new Error('两次输入密码不一致'))-->
-<!--      } else if (value !== '' && !reg2.test(value)) {-->
-<!--        callback(new Error('长度6到18个字符'))-->
-<!--      } else {-->
-<!--        callback()-->
-<!--      }-->
-<!--    }-->
+<script>
+export default {
+  name: 'UpdatePassword',
+  props: {},
+  data () {
+    return {
+      formItemLayout: {
+        labelCol: { xs: { span: 24 }, sm: { span: 8 } },
+        wrapperCol: { xs: { span: 24 }, sm: { span: 16 } }
+      },
+      form: this.$form.createForm(this)
+    }
+  },
+  methods: {
+    validatePass (rule, value, callback) {
+      const reg2 = /^.{6,18}$/
+      const passwordConfirm = this.form.getFieldValue('passwordConfirm')
+      if (value === undefined || value === '') {
+        callback(new Error('请输入密码'))
+      } else if (value !== passwordConfirm && passwordConfirm.length !== 0) {
+        callback(new Error('两次输入密码不一致'))
+      } else if (value !== '' && !reg2.test(value)) {
+        callback(new Error('长度6到18个字符'))
+      } else {
+        callback()
+      }
+    },
 
-<!--    const validatePassConfirm = (rule, value, callback) => {-->
-<!--      if (value === '') {-->
-<!--        callback(new Error('请再次输入密码'))-->
-<!--      } else if (value !== this.formItem.password) {-->
-<!--        callback(new Error('两次输入密码不一致'))-->
-<!--      } else {-->
-<!--        callback()-->
-<!--      }-->
-<!--    }-->
-
-<!--    return {-->
-<!--      isEdit: false,-->
-<!--      formItemRules: {-->
-<!--        password: [-->
-<!--          { required: true, validator: validatePass, trigger: 'blur' }-->
-<!--        ],-->
-<!--        passwordConfirm: [-->
-<!--          { required: true, validator: validatePassConfirm, trigger: 'blur' }-->
-<!--        ]-->
-<!--      },-->
-<!--      formItem: this.getFormItem()-->
-<!--    }-->
-<!--  },-->
-<!--  methods: {-->
-<!--    getFormItem () {-->
-<!--      return {-->
-<!--        userId: '',-->
-<!--        password: '',-->
-<!--        passwordConfirm: ''-->
-<!--      }-->
-<!--    },-->
-<!--    setData (data) {-->
-<!--      if (data && data.userId) {-->
-<!--        this.formItem = Object.assign({}, this.formItem, data)-->
-<!--      }-->
-<!--    },-->
-<!--    handleResetForm () {-->
-<!--      this.$refs['form'].resetFields()-->
-<!--    },-->
-<!--    handleReset () {-->
-<!--      this.formItem = this.getFormItem()-->
-<!--      this.handleResetForm()-->
-<!--    },-->
-<!--    handleSubmit () {-->
-<!--      this.$refs['form'].validate((valid) => {-->
-<!--        if (valid) {-->
-<!--          this.$http.post(this.$apis.user.updatePassword, {-->
-<!--            userId: this.formItem.userId,-->
-<!--            password: this.formItem.password-->
-<!--          }).then(res => {-->
-<!--            this.$bus.emit('closeModal')-->
-<!--          })-->
-<!--        }-->
-<!--      })-->
-<!--    }-->
-<!--  },-->
-<!--  created () {-->
-
-<!--  },-->
-<!--  components: {}-->
-<!--}-->
-<!--</script>-->
-
-<!--<style scoped lang="less" rel="stylesheet/less">-->
-
-<!--</style>-->
+    validatePassConfirm (rule, value, callback) {
+      const password = this.form.getFieldValue('password')
+      if (value === undefined) {
+        callback(new Error('请输入密码'))
+      }
+      if (value && password && value.trim() !== password.trim()) {
+        callback(new Error('两次密码不一致'))
+      }
+      callback()
+    },
+    handleSubmit (param) {
+      const { form: { validateFields } } = this
+      validateFields({ force: true }, (err, values) => {
+        if (!err) {
+          this.$http.post(this.$apis.user.updatePassword, {
+            userId: param.record.userId,
+            password: values.password
+          }).then(res => {
+            this.$message.success('修改成功！')
+            this.$bus.emit('closeModal')
+          })
+        }
+      })
+    },
+    handleReset () {
+      this.form = this.$form.createForm(this)
+    }
+  },
+  created () {
+    this.$bus.on('closeModal', (name) => {
+      this.handleReset()
+    })
+  },
+  components: {}
+}
+</script>

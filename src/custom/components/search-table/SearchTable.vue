@@ -12,16 +12,10 @@
       <div class="table-operator" v-show="actionShow">
         <a-button type="primary" v-if="typeof saveFunc === 'function'" @click="handleSave()">添加</a-button>
         <a-button type="danger" v-if="typeof deleteFunc === 'function'" @click="handleDelete()">删除</a-button>
-        <a-dropdown v-if="actionColumns.length !== 0" >
-          <a-menu slot="overlay" @click="handleAction">
-            <a-menu-item v-for="v in actionColumns" :key="v.dataIndex">
-              <a-icon v-if="v.icon !== undefined || v.icon !== null || v.icon !== ''" :type="v.icon"/>
-              <a-icon v-else type="star"/>
-              {{ v.title }}
-            </a-menu-item>
-          </a-menu>
-          <a-button>更多<a-icon type="down"/></a-button>
-        </a-dropdown>
+        <s-dropdown
+          :actionColumns="actionColumns"
+          :actionFunc="handleAction"
+        ></s-dropdown>
       </div>
 
       <s-table
@@ -50,12 +44,8 @@
  *   关闭modal：this.$bus.emit('closeModal')
  *   重置form：this.$bus.emit('resetAll')
  * 组件事件：
- *   表格获取数据：this.$emit('on-loadData', {  })
  *   点击查询按钮：this.$emit('on-search', {  })
  *   点击重置按钮：this.$emit('on-reset', {  })
- *   保存弹窗事件：this.$emit('on-save', {  })
- *   删除弹窗事件：this.$emit('on-delete', {  })
- *   操作弹窗事件：this.$emit('on-action', {  })
  *
  * ref：
  *   searchForm：'searchForm'
@@ -64,15 +54,6 @@
  * 示例：
  * * import { TabsModal } from '@/custom/components/base'
  * * components: { TabsModal },
- * *
- *
- * * <tabs-modal
- * *   ref="tabsModal"
- * *   :modalTitle='modal标题'
- * *   :tabsPanes='[{ key: 'tab', tab: 'tab', render: <a-tag color='green'>tab</a-tag> }]'
- * *   @on-submit='(data) => console.log(data)'
- * *   @on-reset='(data) => console.log(data)'
- * * ></tabs-modal>
  * *
  * * <search-table
  * *   ref="searchTable"
@@ -100,17 +81,15 @@
  * *   :deleteFunc="deleteFunc"
  * *   @on-search="() => {}"
  * *   @on-reset="() => {}"
- * *   @on-save="() => {}"
- * *   @on-delete="() => {}"
  * *   >
  * *     <solt></solt>
  * * </search-table>
  */
 import { STable } from '@/components'
-import { ProxySlot, SearchForm } from '../base'
+import { ProxySlot, SearchForm, SDropdown } from '../base'
 export default {
   name: 'TableSearch',
-  components: { STable, ProxySlot, SearchForm },
+  components: { STable, ProxySlot, SearchForm, SDropdown },
   props: {
     title: { type: String, required: true },
 
@@ -164,7 +143,6 @@ export default {
      * s-table 加载表格数据
      */
     loadData (param) {
-      this.$emit('on-loadData', { param: param })
       return this.pageFunc(Object.assign({}, param, this.pageParams))
     },
     /**
@@ -185,7 +163,6 @@ export default {
      */
     handleSave (param) {
       this.saveFunc()
-      this.$emit('on-save', { param: param })
     },
     /**
      * 删除按钮事件
@@ -193,7 +170,6 @@ export default {
     handleDelete (param) {
       const _param = { key: this.selectedRowKeys, object: this.selectedRows }
       this.showDeleteModal(_param)
-      this.$emit('on-delete', { param: _param })
     },
     /**
      * 显示删除modal
@@ -212,14 +188,10 @@ export default {
      * 更多操作事件
      */
     handleAction (param) {
-      this.actionColumns.forEach(item => {
-        if (item.dataIndex === param.key) {
-          if (typeof item.func === 'function') {
-            item.func(this)
-          }
-        }
-      })
-      this.$emit('on-action', { param: param })
+      return {
+        key: this.selectedRowKeys,
+        object: this.selectedRows
+      }
     }
   },
   mounted: function () {
