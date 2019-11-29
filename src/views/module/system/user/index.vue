@@ -14,16 +14,15 @@
     @on-reset="() => {}"
   >
     <user-modal
-      ref="userModal"
+      ref="modalForm"
       @on-close="() => {}"
-    >
-    </user-modal>
+    ></user-modal>
   </search-table>
 </template>
 
 <script>
 import SearchTable from '@/custom/components/search-table'
-import UserModal from './modal'
+import UserModal from './modal.vue'
 import { SDropdown } from '@/custom/components/base'
 
 /* eslint-disable */
@@ -77,10 +76,10 @@ export default {
               <s-dropdown
                 size="small"
                 actionColumns={[
-                  { title: '用户设置', dataIndex: 'userSetting', icon: 'user',
+                  { title: '用户设置', dataIndex: 'userInfo', icon: 'user',
                     func: (param) => { this.handleAction(Object.assign({}, param, { text, record, index })) } },
                   { title: '发送到密保邮箱', dataIndex: 'sendEmail', icon: 'select',
-                    func: (param) => { this.handleAction(Object.assign({}, param, { text, record, index })) } },
+                    func: (param) => { this.handleAction(null) } },
                   { title: '修改密码', dataIndex: 'updatePasswd', icon: 'tool',
                     func: (param) => { this.handleAction(Object.assign({}, param, { text, record, index })) } },
                 ]}
@@ -126,22 +125,24 @@ export default {
     saveFunc (_param) {
       if (_param === undefined) {
         // 添加按钮
-        this.$refs['userModal'].handleShow(null, '新增用户', ['userInfo'])
+        this.$refs['modalForm'].handleShow(null, '新增用户', ['userInfo'])
       } else {
         // 编辑按钮
         const { param, text, record, index } = _param
-        this.$refs['userModal'].handleShow(record, '编辑用户 - ' + record.userName, ['userInfo', 'userRole', 'userAuth', 'updatePasswd'])
+        this.$refs['modalForm'].handleShow(record, '编辑用户 - ' + record.userName, ['userInfo', 'userRole', 'userAuth', 'updatePasswd'])
       }
     },
     handleAction (_param) {
-      if (_param.key !== undefined && _param.object !== undefined) {
+      if (_param === null) {
+        this.$notification.warning({ message: 'emmm....', description: '啥也没干...' })
+      } else if (_param.key !== undefined && _param.object !== undefined) {
         // 批量操作
         const { actionParam, key, object } = _param
-        this.$refs['userModal'].handleShow(key, actionParam.title, [])
+        this.$refs['modalForm'].handleShow(key, actionParam.title, [])
       } else {
         // 表格操作
         const { actionParam, text, record, index } = _param
-        this.$refs['userModal'].handleShow(record, actionParam.title, [])
+        this.$refs['modalForm'].handleShow(record, actionParam.title, [actionParam.dataIndex])
       }
     }
   },

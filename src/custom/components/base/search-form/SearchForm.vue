@@ -53,8 +53,8 @@
  * 根据字段参数自动生成
  *
  * bus事件：
- *   注册：this.$bus.on('resetAll', () => {}}
- *   触发：this.$bus.emit('resetAll')
+ *   注册：this.$bus.on('resetSearch', () => {}}
+ *   触发：this.$bus.emit('resetSearch')
  * 组件事件：
  *   点击查询按钮：this.$emit('on-search', { tabKey: tabActiveKey })
  *   点击重置按钮：this.$emit('on-reset', { tabKey: tabActiveKey })
@@ -95,7 +95,7 @@ export default {
   },
   created () {
     // 监听重置事件
-    this.$bus.on('resetAll', (name) => {
+    this.$bus.on('resetSearch', (name) => {
       this.handleReset()
     })
   },

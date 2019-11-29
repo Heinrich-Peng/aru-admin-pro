@@ -2,6 +2,7 @@
   <div>
     <tabs-modal
       ref="tabsModal"
+      :value="tabsParams"
       :modalTitle="modalTitle"
       :tabsPanes="tabsPanes"
       @on-submit="handleSubmit"
@@ -13,22 +14,29 @@
 <script>
 import { TabsModal } from '@/custom/components/base'
 import UpdatePassword from './form/update-password'
+import UserInfo from './form/user-info'
+import UserRole from './form/user-role'
 
 export default {
   name: 'UserModal',
-  components: { UpdatePassword, TabsModal },
+  components: { UserRole, UserInfo, UpdatePassword, TabsModal },
   props: {},
   data () {
     return {
       modalTitle: '',
+      tabsParams: {
+        show: [],
+        hidden: []
+      },
       tabsPanes: [
         { key: 'userInfo',
           tab: '基础信息',
-          render: <a-tag color='green'>green</a-tag>
+          render: <user-info ref="userInfo" paramFunc={this.getParamTemp}></user-info>
         },
         { key: 'userRole',
           tab: '角色授权',
           render: <a-tag color='red'>red</a-tag>
+          // render: <user-role ref="userInfo" value={this.paramTemp}></user-role>
         },
         { key: 'userAuth',
           tab: '功能授权',
@@ -44,21 +52,10 @@ export default {
   },
   methods: {
     handleShow (param, title, refs = ['userInfo', 'userRole', 'userAuth', 'updatePasswd']) {
-      // return this.$http.post(this.$apis.user.add, {
-      //
-      // }).then(res => {
-      //
-      // })
-
-      // return this.$http.post(this.$apis.user.update, {
-      //
-      // }).then(res => {
-      //
-      // })
-      this.$refs['tabsModal'].handleShow(param)
       this.paramTemp = param
       this.modalTitle = title
-      // console.warn(param)
+      this.tabsParams.show = refs
+      this.$refs['tabsModal'].handleShow()
     },
     handleSubmit () {
       const tabs = this.$refs['tabsModal']
@@ -66,8 +63,12 @@ export default {
       this.$refs[key].handleSubmit(this.paramTemp)
     },
     handleClose () {
+      this.tabsParams.show = []
       this.paramTemp = {}
       this.modalTitle = ''
+    },
+    getParamTemp () {
+      return this.paramTemp
     }
   }
 }

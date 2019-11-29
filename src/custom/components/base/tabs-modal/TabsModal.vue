@@ -13,8 +13,8 @@
       type="line"
       :activeKey="tabActiveKey"
       @change="activeKey => tabActiveKey = activeKey">
-      <a-tab-pane v-for="value in tabsPanes" :key="value.key" :tab="value.tab">
-        <proxy-slot :ref="value.key" :customRender="value.render"></proxy-slot>
+      <a-tab-pane v-for="v in tabsPanes" :key="v.key" :tab="v.tab" v-if="value.show.includes(v.key)">
+        <proxy-slot :ref="v.key" :customRender="v.render"></proxy-slot>
       </a-tab-pane>
     </a-tabs>
   </a-modal>
@@ -54,6 +54,8 @@ export default {
   name: 'TabsModal',
   components: { ProxySlot },
   props: {
+    // 要 显示/隐藏 { show: [], hidden: [] }
+    value: { type: Object, required: false, default: () => { return { show: [], hidden: [] } } },
     // modal标题
     modalTitle: { type: String, required: true },
     // 多个标签列参数
@@ -74,6 +76,9 @@ export default {
     this.$bus.on('closeModal', (name) => {
       this.handleReset()
     })
+    this.$bus.on('resetModal', (name) => {
+      this.modalSaving = false
+    })
     // 进入页面操作
     this.handleReset()
   },
@@ -85,12 +90,17 @@ export default {
       this.modalVisible = false
       this.modalSaving = false
       this.tabActiveKey = this.tabsPanes[0].key
+      // this.$destroy()
     },
     /**
      * modal显示
      */
     handleShow (param) {
       this.modalVisible = true
+
+      if (!this.value.show.includes(this.tabActiveKey)) {
+        this.tabActiveKey = this.value.show[0]
+      }
     },
     /**
      * 取消按钮事件

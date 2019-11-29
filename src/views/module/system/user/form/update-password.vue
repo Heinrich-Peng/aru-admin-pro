@@ -1,5 +1,5 @@
 <template>
-  <a-form :form="form" @submit="handleSubmit">
+  <a-form :form="form">
     <a-form-item v-bind="formItemLayout" label="要修改的密码">
       <a-input
         type="password"
@@ -26,8 +26,8 @@ export default {
   data () {
     return {
       formItemLayout: {
-        labelCol: { xs: { span: 24 }, sm: { span: 8 } },
-        wrapperCol: { xs: { span: 24 }, sm: { span: 16 } }
+        labelCol: { xs: { span: 24 }, sm: { span: 6 } },
+        wrapperCol: { xs: { span: 24 }, sm: { span: 18 } }
       },
       form: this.$form.createForm(this)
     }
@@ -62,17 +62,22 @@ export default {
       validateFields({ force: true }, (err, values) => {
         if (!err) {
           this.$http.post(this.$apis.user.updatePassword, {
-            userId: param.record.userId,
+            userId: param.userId,
             password: values.password
           }).then(res => {
             this.$message.success('修改成功！')
             this.$bus.emit('closeModal')
+          }).catch(() => {
+            this.$message.error('修改失败！')
+            this.$bus.emit('closeModal')
           })
+        } else {
+          this.$bus.emit('resetModal')
         }
       })
     },
     handleReset () {
-      this.form = this.$form.createForm(this)
+      this.form.clearField()
     }
   },
   created () {

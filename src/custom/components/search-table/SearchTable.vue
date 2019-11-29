@@ -42,7 +42,7 @@
  *
  * bus事件：
  *   关闭modal：this.$bus.emit('closeModal')
- *   重置form：this.$bus.emit('resetAll')
+ *   重置form：this.$bus.emit('resetSearch')
  * 组件事件：
  *   点击查询按钮：this.$emit('on-search', {  })
  *   点击重置按钮：this.$emit('on-reset', {  })
@@ -117,6 +117,9 @@ export default {
     }
   },
   created () {
+    this.$bus.on('reloadTable', (name) => {
+      this.handleSearch()
+    })
   },
   methods: {
     /**
